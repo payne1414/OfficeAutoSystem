@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+    <!--扫描包-->
+    <context:component-scan base-package="com.qf"></context:component-scan>
+    <!--数据源的配置-->
+    <bean id="datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost/oa"/>
+        <property name="user" value="root"/>
+        <property name="password" value="123456"/>
+        <property name="initialPoolSize" value="10"/>
+        <property name="maxPoolSize" value="20"/>
+    </bean>
+    <!--配置activiti环境-->
+    <bean class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration" id="processEngineConfiguration">
+        <property name="dataSource" ref="datasource"/>
+        <property name="databaseSchemaUpdate" value="true"/>
+    </bean>
+    <bean class="org.activiti.spring.ProcessEngineFactoryBean" id="processEngine">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+    </bean>
+    <bean class="org.activiti.engine.RepositoryService" id="repositoryService" factory-bean="processEngine"
+          factory-method="getRepositoryService"></bean>
+    <bean class="org.activiti.engine.RuntimeService" id="runtimeService" factory-bean="processEngine"
+          factory-method="getRuntimeService"/>
+    <bean class="org.activiti.engine.TaskService" id="taskService" factory-bean="processEngine"
+          factory-method="getTaskService"/>
+    <bean class="org.activiti.engine.HistoryService" id="historyService" factory-bean="processEngine"
+          factory-method="getHistoryService"/>
+
+    <!--配置事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <constructor-arg name="dataSource" ref="datasource"/>
+    </bean>
+    <!--声明式事务的配置-->
+    <tx:advice id="advice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="add*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="select*" propagation="SUPPORTS"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--配置事务的切面-->
+    <aop:config>
+        <aop:pointcut id="pointCut" expression="execution(* com.qf.service.*.*(..))"></aop:pointcut>
+        <aop:advisor advice-ref="advice" pointcut-ref="pointCut"></aop:advisor>
+
+    </aop:config>
+    <!--sqlsessionfactory配置-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="datasource"/>
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.qf.mapper"></property>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+    </bean>
+</beans>

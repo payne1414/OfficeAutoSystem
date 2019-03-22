@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <mapper namespace="com.qf.mapper.LeaderMapper">
+    <!--班主任个人信息管理-->
+    <select id="selectLeader" resultType="com.qf.pojo.TbLeader">
+        SELECT * FROM tb_Leader where leadername=#{leadername}
+    </select>
+    <select id="updateLeader" parameterType="com.qf.pojo.TbLeader">
+        update tb_leader set leaderpassword=#{leaderpassword}  =  where leadername=#{leadername};
+    </select>
+    <!--班主任周报查看-->
+    <select id="selectReport" resultType="com.qf.pojo.TbReport">
+        SELECT * FROM tb_report
+    </select>
+    <!--学生管理-->
+    <select id="selectClass" resultType="com.qf.pojo.TbClass">
+        SELECT * FROM tb_class
+    </select>
+    <select id="selectStudent" resultType="com.qf.pojo.TbStudent">
+        SELECT * from tb_student where classname=#{classname}
+    </select>
+    <!--成绩查看-->
+    <select id="selectScore" resultType="com.qf.pojo.TbScore">
+        SELECT * FROM tb_score WHERE
+    </select>
+</mapper>

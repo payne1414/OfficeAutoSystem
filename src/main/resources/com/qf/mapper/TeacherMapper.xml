@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        <mapper namespace="com.qf.mapper.TeacherMapper">
+    <!--个人资料管理-->
+    <select id="selectTeacher" resultType="com.qf.pojo.TbUser">
+        SELECT * from tb_user where unum=#{unum}
+    </select>
+    <update id="updateTeacher" parameterType="com.qf.pojo.TbUser">
+        UPDATE tb_user set userpassword =#{userpassword} where username=#{username}
+    </update>
+    <!--周报查看打分-->
+    <select id="selectReport" resultType="com.qf.pojo.TbReport">
+        SELECT * FROM tb_report
+    </select>
+    <update id="updateReport" parameterType="com.qf.pojo.TbReport">
+        UPDATE tb_report SET grade=#{arg0} where rid=#{arg1}
+    </update>
+    <!--学生成绩管理-->
+    <insert id="addScore" parameterType="com.qf.pojo.TbScore">
+        INSERT INTO tb_score VALUES (NULL,#{score},#{moment},#{studentname},#{classid})
+    </insert>
+    <select id="selectClass" resultType="com.qf.pojo.TbClass">
+        SELECT * FROM tb_class
+    </select>
+    <select id="selectScore" resultType="com.qf.pojo.TbScore">
+        SELECT * FROM tb_score where classname=#{classname}
+    </select>
+    <select id="selectScoreOne" resultType="com.qf.pojo.TbScore">
+        SELECT * FROM tb_score where stuid=#{stuid}
+    </select>
+    <!--讲师学生信息查看-->
+    <select id="selectStudent" resultType="com.qf.pojo.TbUser">
+        SELECT * from tb_student WHERE unum=#{unum}
+    </select>
+</mapper>

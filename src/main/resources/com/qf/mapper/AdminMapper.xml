@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qf.mapper.AdminMapper">
+    <!--课程管理-->
+    <insert id="addCourse" parameterType="com.qf.pojo.TbCourse">
+        INSERT INTO tb_course (cname) VALUES (#{cname})
+    </insert>
+    <delete id="deleteCourse">
+        DELETE FROM tb_course WHERE cid = #{cid}
+    </delete>
+    <select id="selectTbCourseList" resultType="com.qf.pojo.TbCourse">
+        SELECT * FROM tb_course
+    </select>
+    <!--角色管理-->
+    <insert id="addPosition" parameterType="com.qf.pojo.TbPosition">
+        INSERT INTO tb_position (position) VALUES (#{position})
+    </insert>
+    <delete id="deletePosition">
+        DELETE FROM tb_position WHERE pid = #{pid}
+    </delete>
+    <select id="selectTbPositionList" resultType="com.qf.pojo.TbPosition">
+        SELECT * FROM tb_position
+    </select>
+    <!--用户管理-->
+    <select id="selectTbUserListByPosition" resultType="com.qf.pojo.TbUser">
+        SELECT * FROM tb_user WHERE position = #{position}
+    </select>
+    <select id="selectUser" resultType="com.qf.pojo.TbUser">
+        SELECT * FROM tb_user WHERE unum = #{unum}
+    </select>
+    <!--部门管理-->
+    <insert id="addDepartment" parameterType="com.qf.pojo.TbDepartment">
+        INSERT INTO tb_department (dname) VALUES (#{dname})
+    </insert>
+    <delete id="deleteDepartment">
+        DELETE FROM tb_department WHERE did = #{did}
+    </delete>
+    <select id="selectTbDepartmentList" resultType="com.qf.pojo.TbDepartment">
+        SELECT * FROM tb_department
+    </select>
+    <!--员工管理-->
+    <insert id="addStaff" parameterType="com.qf.pojo.TbUser">
+        INSERT INTO tb_user (unum,username,userpassword,position) VALUES (#{unum},#{username},#{userpassword},#{name})
+    </insert>
+    <delete id="deleteStaff">
+        DELETE FROM tb_user WHERE unum = #{unum}
+    </delete>
+    <select id="selectTbStaffList" resultType="com.qf.pojo.TbUser">
+        SELECT * FROM tb_user WHERE position NOT IN ("admin","student")
+    </select>
+    <select id="selectTbStaffListByName" resultType="com.qf.pojo.TbUser">
+        SELECT * FROM tb_user WHERE username LIKE '%${value}%'
+    </select>
+    <select id="selectTbStaffListByPosition" resultType="com.qf.pojo.TbUser">
+        SELECT * FROM tb_user WHERE position = #{position}
+    </select>
+    <!--班级管理-->
+    <resultMap id="classMap" type="com.qf.pojo.TbClass">
+        <id column="classid" property="classid"/>
+        <result property="classname" column="classname"/>
+        <result column="teachername" property="teachername"/>
+        <result column="leadername" property="leadername"/>
+        <association property="tbUser" resultMap="userMap">
+            <id property="uid" column="uid"/>
+            <result property="unum" column="unum"/>
+            <result property="username" column="username"/>
+            <result property="userpassword" column="userpassword"/>
+            <result property="position" column="position"/>
+            <result property="classid" column="classid"/>
+        </association>
+    </resultMap>
+    <resultMap id="userMap" type="com.qf.pojo.TbUser">
+        <id property="uid" column="uid"/>
+        <result property="unum" column="unum"/>
+        <result property="username" column="username"/>
+        <result property="userpassword" column="userpassword"/>
+        <result property="position" column="position"/>
+        <result property="classid" column="classid"/>
+    </resultMap>
+    <insert id="addClass" parameterType="com.qf.pojo.TbClass">
+        INSERT INTO tb_class (classname,teachername,leadername) VALUES (#{classname},#{teachername},#{leadername})
+    </insert>
+    <delete id="deleteClassByClassid">
+        DELETE FROM tb_class WHERE classid = #{classid}
+    </delete>
+    <select id="selectTbClassList" resultType="com.qf.pojo.TbClass">
+        SELECT * FROM tb_class
+    </select>
+    <select id="selectClassByStudent" resultMap="classMap">
+        SELECT * FROM tb_class,tb_user WHERE tb_class.classid = tb_user.classid AND unum = #{unum}
+    </select>
+</mapper>        
